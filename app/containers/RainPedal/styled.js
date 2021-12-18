@@ -13,7 +13,7 @@ export const MainBody = styled(Grid)`
   border: 2px solid grey;
   border-radius: 10px;
   width: 330px;
-  height: 560px;
+  height: 550px;
   position: relative;
   box-shadow: 7px 10px;
   background-color: #b1d3c6;
@@ -39,6 +39,7 @@ export const Box = styled(Grid)`
   transform-origin: center center;
   z-index: 1;
   border-radius: 50%;
+  transform: rotate(-45deg);
 `;
 
 export const Circle = styled(Grid)`
@@ -55,18 +56,18 @@ export const Circle = styled(Grid)`
 `;
 
 export const Dot = styled(Grid)`
-  width: 8px;
-  height: 8px;
+  width: 22px;
+  height: 3px;
   background-color: black;
   position: absolute;
-  top: 40px;
-  left: 8px;
-  border-radius: 50%;
+  top: 36px;
+  left: 0px;
+  border-radius: 10%;
 `;
 
 export const KnobLabel = styled.h4`
   position: absolute;
-  left: 25px;
+  left: 27px;
   bottom: 0px;
   font-size: 15px;
   margin: 0;
@@ -85,10 +86,13 @@ export const StartStopButton = styled(Grid)`
   width: 80px;
   height: 40px;
   font-family: courier, arial, helvetica;
-  font-size: 10px;
+  font-size: 12px;
   border: 2px solid black;
   background-color: #cccccc;
   border-radius: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 export const RobotRainTitle = styled.h3`
@@ -97,4 +101,16 @@ export const RobotRainTitle = styled.h3`
   bottom: 20px;
   color: #fff5eb;
   -webkit-text-stroke: 1px black;
+`;
+
+export const OnLight = styled(Grid)`
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  position: absolute;
+  left: 30%;
+  top: 71%;
+  transform: translate(-50%, -50%);
+  border: 1px solid black;
+  background-color: ${props => (props.columns === 1 ? 'red' : 'maroon')};
 `;

@@ -13,6 +13,7 @@ import {
   KnobLabel,
   BoxContainer,
   RobotRainTitle,
+  OnLight,
 } from './styled';
 
 import { wholeTone } from './constants';
@@ -28,7 +29,6 @@ import {
 let globalTempo = 50;
 let globalOctave = 3;
 let globalPitch = 0;
-let deviceOn = false;
 
 Tone.Transport.bpm.value = globalTempo;
 const reverb = new Tone.Reverb(2).toDestination();
@@ -61,19 +61,21 @@ Tone.Transport.scheduleRepeat(
   0,
 );
 
-const startTone = async () => {
-  if (!deviceOn) {
-    await Tone.start();
-    console.log('audio is ready');
-    Tone.Transport.start();
-  } else {
-    Tone.Transport.stop();
-  }
-  deviceOn = !deviceOn;
-};
-
 export default function RainPedal() {
   const [active, setActive] = useState(false);
+  const [deviceOn, setDeviceOn] = useState(false);
+
+  const startTone = async () => {
+    if (!deviceOn) {
+      await Tone.start();
+      console.log('audio is ready');
+      Tone.Transport.start();
+      setDeviceOn(true);
+    } else {
+      Tone.Transport.stop();
+      setDeviceOn(false);
+    }
+  };
 
   const turnKnob = e => {
     const box = e.currentTarget;
@@ -101,19 +103,25 @@ export default function RainPedal() {
     const x = mX - center.x;
     const y = mY - center.y;
     const angle = Math.floor(Math.atan2(y, x) * radians);
-    const startAngle = 180;
+    let value = 0;
 
     if (active) {
-      if (angle > -180 && angle < 0) {
-        rotate = angle + startAngle;
+      if (angle > 135 || angle < 45) {
+        rotate = angle + 180;
         box.style.transform = `rotate(${rotate}deg)`;
 
+        if (angle > 135) {
+          value = angle - 135;
+        } else {
+          value = angle + 225;
+        }
+
         if (box.id === 'tempo-box') {
-          globalTempo = 50 + rotate * 1.2;
-        } else if (box.id ==='octave-box') {
-          globalOctave = 3 + Math.floor(rotate / 60);
+          globalTempo = 50 + value;
+        } else if (box.id === 'octave-box') {
+          globalOctave = 3 + Math.floor(value / 90);
         } else if (box.id === 'pitch-box') {
-          globalPitch = rotate / 180;
+          globalPitch = value / 270;
         }
       }
     }
@@ -123,7 +131,7 @@ export default function RainPedal() {
     <OuterBody onMouseUp={() => setActive(false)}>
       <MainBody>
         <KnobContainer>
-          <BoxContainer style={{ top: '30px', left: '40px' }}>
+          <BoxContainer style={{ top: '30px', left: '36px' }}>
             <Box
               id="tempo-box"
               onMouseDown={() => setActive(true)}
@@ -147,7 +155,7 @@ export default function RainPedal() {
             </Box>
             <KnobLabel>Pitch</KnobLabel>
           </BoxContainer>
-          <BoxContainer style={{ top: '30px', left: '180px' }}>
+          <BoxContainer style={{ top: '30px', left: '184px' }}>
             <Box
               id="pitch-box"
               onMouseDown={() => setActive(true)}
@@ -157,11 +165,12 @@ export default function RainPedal() {
                 <Dot id="dot-3" />
               </Circle>
             </Box>
-            <KnobLabel>Detune</KnobLabel>
+            <KnobLabel style={{ left: '21px' }}>Detune</KnobLabel>
           </BoxContainer>
         </KnobContainer>
-        <ButtonContainer item>
-          <StartStopButton onClick={startTone}>I/O</StartStopButton>
+        <OnLight columns={deviceOn ? 1 : 0} />
+        <ButtonContainer>
+          <StartStopButton onClick={startTone}>ON / OFF</StartStopButton>
         </ButtonContainer>
         <RobotRainTitle id="title">Robot Rain</RobotRainTitle>
       </MainBody>
